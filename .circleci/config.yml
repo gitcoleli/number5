@@ -1,5 +1,8 @@
 version: 2.1
 
+orbs:
+  aws-ecr: circleci/aws-ecr@6.15.3
+  
 commands:
     
 jobs:
@@ -57,27 +60,32 @@ jobs:
                         pip install -r requirements.txt
                         safety check
 
-  docker-app:
-    build:
-    orbs:
-      aws-ecr: circleci/aws-ecr@6.15.3
-    working_directory: ~/repo
-    steps:
-      - checkout
-      - run: yum -y install tar gzip
-      - attach_workspace:
-                    at: ~/
-      - run:
-                name: Install dependencies
-                command: |
-                        aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/r3i6g3s9
-                        docker build -t number5 .
-                        docker tag number5:latest public.ecr.aws/r3i6g3s9/number5:latest
-                        docker push public.ecr.aws/r3i6g3s9/number5:latest
+  build_and_push_image:
+    jobs:
+      - aws-ecr/build-and-push-image:
+          account-url: public.ecr.aws/r3i6g3s9/number5
+          aws-access-key-id: ACCESS_KEY_ID_ENV_VAR_NAME
+          aws-secret-access-key: SECRET_ACCESS_KEY_ENV_VAR_NAME
+          context: myContext
+          create-repo: true
+          dockerfile: Dockerfile
+          no-output-timeout: 20m
+          path: public.ecr.aws/r3i6g3s9/number5:latest
+          profile-name: myProfileName
+          region: us-east-1
+          repo: myECRRepository
+          skip-when-tags-exist: false
+          tag: 'latest,myECRRepoTag'
+          
+                        #aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/r3i6g3s9
+                        #docker build -t number5 .
+                        #docker tag number5:latest public.ecr.aws/r3i6g3s9/number5:latest
+                        #docker push public.ecr.aws/r3i6g3s9/number5:latest
                      
 
 
 workflows:
+build_and_push_image:
   default:
     jobs:
       #- build-app
@@ -85,5 +93,5 @@ workflows:
       #    requires: [build-app]
       #- scan-app:
       #    requires: [lint-app]
-      - docker-app
+      #- docker-app
           #requires: [scan-app]          
