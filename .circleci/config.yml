@@ -21,8 +21,37 @@ jobs:
                         pip install -r requirements.txt
                         pip list
                         ls
-                        python app.py
+
+  lint-app:
+    build:
+    docker:
+      - image: python:3.7.3-stretch
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - attach_workspace:
+                    at: ~/
+      - run:
+                name: Install dependencies
+                command: |
+                        pip install -r requirements.txt
+                        pip list
+      - run:
+                name: lint app
+                command: |
+                        pylint app.py                                                
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
 workflows:
   default:
     jobs:
       - build-app
+      - lint-app:
+          requires: [build-app]
