@@ -39,7 +39,7 @@ jobs:
       - run:
                 name: lint app
                 command: |
-                        pylint app.py                                                
+                        pylint --disable=R,C,W1203 app.py                                                
                         
                         
                         
