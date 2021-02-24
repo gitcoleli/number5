@@ -60,7 +60,7 @@ jobs:
   docker-app:
     build:
     docker:
-      - image: amazon/aws-cli
+      - image: circleci/aws-ecr@6.15.3
     working_directory: ~/repo
     steps:
       - checkout
