@@ -14,8 +14,8 @@ orbs:
           dockerfile: Dockerfile
           no-output-timeout: 20m
           path: number5
-          profile-name: myProfileName
+          profile-name: number5
           region: AWS_REGION_ENV_VAR_NAME
-          repo: myECRRepository
+          repo: number5
           skip-when-tags-exist: false
-          tag: 'latest,myECRRepoTag'
+          tag: 'latest,number5'
