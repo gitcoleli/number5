@@ -64,12 +64,12 @@ jobs:
     working_directory: ~/repo
     steps:
       - checkout
+      - run: yum -y install tar gzip
       - attach_workspace:
                     at: ~/
       - run:
                 name: Install dependencies
                 command: |
-                        yum -y install tar gzip
                         aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/r3i6g3s9
                         docker build -t number5 .
                         docker tag number5:latest public.ecr.aws/r3i6g3s9/number5:latest
