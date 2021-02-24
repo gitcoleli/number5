@@ -23,3 +23,7 @@ jobs:
                         pip list
                         ls
                         python app.py
+workflows:
+  default:
+    jobs:
+      - build-app
