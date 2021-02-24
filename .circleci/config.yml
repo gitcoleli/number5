@@ -2,96 +2,20 @@ version: 2.1
 
 orbs:
   aws-ecr: circleci/aws-ecr@6.15.3
-  
-commands:
-    
-jobs:
-
-# ##########################Building Section #################################################################################################
-
-  build-app:
-    build:
-    docker:
-      - image: python:3.7.3-stretch
-    working_directory: ~/repo
-    steps:
-      - checkout
-      - attach_workspace:
-                    at: ~/
-      - run:
-                name: Install dependencies
-                command: |
-                        pip install -r requirements.txt
-                        pip list
-                        ls
-
-  lint-app:
-    build:
-    docker:
-      - image: python:3.7.3-stretch
-    working_directory: ~/repo
-    steps:
-      - checkout
-      - attach_workspace:
-                    at: ~/
-      - run:
-                name: Install dependencies
-                command: |
-                        pip install -r requirements.txt
-                        pip list
-      - run:
-                name: lint app
-                command: |
-                        pylint --disable=R,C,W1203 app.py                                                
-
-  scan-app:
-    build:
-    docker:
-      - image: python:3.7.3-stretch
-    working_directory: ~/repo
-    steps:
-      - checkout
-      - attach_workspace:
-                    at: ~/
-      - run:
-                name: Install dependencies
-                command: |
-                        pip install --upgrade pip
-                        pip install -r requirements.txt
-                        safety check
-
+  workflows:
   build_and_push_image:
     jobs:
       - aws-ecr/build-and-push-image:
-          account-url: public.ecr.aws/r3i6g3s9/number5
+          account-url: https://us-west-2.console.aws.amazon.com/ecr/repositories?region=us-west-2
           aws-access-key-id: ACCESS_KEY_ID_ENV_VAR_NAME
           aws-secret-access-key: SECRET_ACCESS_KEY_ENV_VAR_NAME
           context: myContext
           create-repo: true
           dockerfile: Dockerfile
           no-output-timeout: 20m
-          path: public.ecr.aws/r3i6g3s9/number5:latest
+          path: number5
           profile-name: myProfileName
-          region: us-east-1
+          region: AWS_REGION_ENV_VAR_NAME
           repo: myECRRepository
           skip-when-tags-exist: false
           tag: 'latest,myECRRepoTag'
-          
-                        #aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/r3i6g3s9
-                        #docker build -t number5 .
-                        #docker tag number5:latest public.ecr.aws/r3i6g3s9/number5:latest
-                        #docker push public.ecr.aws/r3i6g3s9/number5:latest
-                     
-
-
-workflows:
-build_and_push_image:
-  default:
-    jobs:
-      #- build-app
-      #- lint-app:
-      #    requires: [build-app]
-      #- scan-app:
-      #    requires: [lint-app]
-      #- docker-app
-          #requires: [scan-app]          
