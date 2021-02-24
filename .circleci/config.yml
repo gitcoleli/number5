@@ -40,18 +40,27 @@ jobs:
                 name: lint app
                 command: |
                         pylint --disable=R,C,W1203 app.py                                                
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
+
+  scan-app:
+    build:
+    docker:
+      - image: python:3.7.3-stretch
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - attach_workspace:
+                    at: ~/
+      - run:
+                name: Install dependencies
+                command: |
+                        pip install -r requirements.txt
+                        safety check
+
 workflows:
   default:
     jobs:
       - build-app
       - lint-app:
           requires: [build-app]
+      - scan-app:
+          requires: [lint-app]

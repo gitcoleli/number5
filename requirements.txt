@@ -1,3 +1,4 @@
 make==0.1.6.post2
 pylint==2.7.1
 Flask==1.1.2
+safety==1.10.3
