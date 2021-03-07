@@ -80,6 +80,6 @@ workflows:
           tag: "latest,v0.1.${CIRCLE_BUILD_NUM}"
           dockerfile: Dockerfile
           path: .
-          region: us-east-1
+          region: US-EAST-1_ENV_VAR_NAME
           requires: [scan-app]
 
