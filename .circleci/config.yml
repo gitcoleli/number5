@@ -9,7 +9,7 @@ jobs:
   build-app:
     build:
     docker:
-      - image: python:3.7.3-stretch
+      - image: python:3.9-alpine
     working_directory: ~/repo
     steps:
       - checkout
@@ -25,7 +25,7 @@ jobs:
   lint-app:
     build:
     docker:
-      - image: python:3.7.3-stretch
+      - image: python:3.9-alpine
     working_directory: ~/repo
     steps:
       - checkout
@@ -44,7 +44,7 @@ jobs:
   scan-app:
     build:
     docker:
-      - image: python:3.7.3-stretch
+      - image: python:3.9-alpine
     working_directory: ~/repo
     steps:
       - checkout
