@@ -2,3 +2,4 @@ Flask==1.1.2
 safety==1.10.3
 pylint==2.7.2
 make==0.1.6.post2
+pytest==6.2.2

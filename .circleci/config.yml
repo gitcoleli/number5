@@ -22,6 +22,8 @@ jobs:
                         pip list
                         ls
 
+#######################################linting the Application##################################################################################
+
   lint-app:
     build:
     docker:
@@ -41,6 +43,8 @@ jobs:
                 command: |
                         pylint --disable=R,C,W1203 app.py                                                
 
+###############################################vulnerability Scanning the alplication ###############################################################
+
   scan-app:
     build:
     docker:
@@ -56,6 +60,39 @@ jobs:
                         pip install --upgrade pip
                         pip install -r requirements.txt
                         safety check
+
+###################################################Using Make File to test docker build ###############################################################
+
+  make-build:
+    build:
+    docker:
+      - image: python:3.9-alpine
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - attach_workspace:
+                    at: ~/
+      - run:
+                name: Install dependencies
+                command: |
+                        pip install --upgrade pip
+                        pip install -r requirements.txt
+      - run:
+          name: install dependencies
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            make install
+            # Install hadolint
+            wget -O /bin/hadolint https://github.com/hadolint/hadolint/releases/download/v1.16.3/hadolint-Linux-x86_64 &&\
+            chmod +x /bin/hadolint
+
+      # run hadolint!
+      - run:
+          name : run hadolint
+          command: |
+            . venv/bin/activate
+            make lint
 
 workflows:
   default:
