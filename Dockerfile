@@ -1,27 +1,12 @@
-FROM python:3.7.3-stretch
-
-## Step 1:
-# Create a working directory
-
-WORKDIR /app
-
-## Step 2:
-# Copy source code to working directory
-
-COPY . app.py /app/
-
-## Step 3:
-# Install packages from requirements.txt
-# hadolint ignore=DL3013
-
-RUN pip install  -r requirements.txt
-
-## Step 4:
-# Expose port 80
-
-EXPOSE 8080
-
-## Step 5:
-# Run app.py at container launch
-
-CMD [ "python","app.py" ]
+# init a base image (Alpine is small Linux distro)
+FROM python:3.9-alpine
+# define the present working directory
+WORKDIR /docker-blue
+# copy the contents into the working dir
+ADD . /docker-blue
+# run pip to install the dependencies of the flask app
+RUN pip install -r requirements.txt
+# container port
+EXPOSE 5000
+# define the command to start the container
+CMD ["python3","app.py"]
