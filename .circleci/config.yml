@@ -63,7 +63,7 @@ jobs:
 
 ###################################################Using Make File to test docker build ###############################################################
 
-  make-build:
+  hadolint:
     build:
     docker:
       - image: python:3.9-alpine
@@ -102,3 +102,5 @@ workflows:
           requires: [build-app]
       - scan-app:
           requires: [lint-app]
+      - hadolint:
+          requires: [scan-app]
