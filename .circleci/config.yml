@@ -65,6 +65,31 @@ jobs:
 
 ###################################################docker build ###############################################################
 
+  ecr-upload:
+    build:
+    docker:
+      - image: python:3.9-alpine
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - attach_workspace:
+                    at: ~/
+      - run:
+                name: Install dependencies
+                command: |
+                        pip install --upgrade pip
+                        pip install docker
+                        pip install awscli
+                        pip install -r requirements.txt
+
+      - run:
+                name: push to ecr
+                command: |
+                        aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/r3i6g3s9
+                        docker build -t number5 .
+                        docker tag number5:latest public.ecr.aws/r3i6g3s9/number5:latest.${CIRCLE_BUILD_NUM}
+                        docker push public.ecr.aws/r3i6g3s9/number5:latest.${CIRCLE_BUILD_NUM}
+
 
 
 workflows:
@@ -75,10 +100,12 @@ workflows:
           requires: [build-app]
       - scan-app:
           requires: [lint-app]
-      - aws-ecr/build-and-push-image:
-          repo: number5
-          tag: "latest,v0.1.${CIRCLE_BUILD_NUM}"
-          dockerfile: Dockerfile
-          path: .
+      - ecr-upload:
           requires: [scan-app]
+      # - aws-ecr/build-and-push-image:
+      #     repo: number5
+      #     tag: "latest,v0.1.${CIRCLE_BUILD_NUM}"
+      #     dockerfile: Dockerfile
+      #     path: .
+      #     requires: [scan-app]
 
