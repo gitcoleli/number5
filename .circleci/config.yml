@@ -111,7 +111,7 @@ workflows:
       #     requires: [scan-app]
       - aws-ecr/build-and-push-image:
           setup-remote-docker: false
-          repo: number5
+          # repo: number5
           tag: "latest,v0.1.${CIRCLE_BUILD_NUM}"
           dockerfile: Dockerfile
           path: .
