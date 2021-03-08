@@ -110,7 +110,7 @@ workflows:
       # - ecr-upload:
       #     requires: [scan-app]
       - aws-ecr/build-and-push-image:
-          setup-remote-docker: true
+          setup-remote-docker: false
           remote-docker-version: 19.03.13
           docker-login: true
           repo: number5
