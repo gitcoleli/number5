@@ -111,8 +111,6 @@ workflows:
       #     requires: [scan-app]
       - aws-ecr/build-and-push-image:
           setup-remote-docker: false
-          remote-docker-version: 19.03.13
-          docker-login: true
           repo: number5
           tag: "latest,v0.1.${CIRCLE_BUILD_NUM}"
           dockerfile: Dockerfile
