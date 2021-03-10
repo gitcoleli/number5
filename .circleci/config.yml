@@ -106,7 +106,7 @@ jobs:
                 command: |
                         pwd
                         ls
-                        kubectl version --short --client
+                        kubectl version 
 
 
 
