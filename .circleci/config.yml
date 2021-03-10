@@ -64,6 +64,49 @@ jobs:
                         safety check
 
 
+  kubefun:
+    docker:
+      - image: ubuntu:20.04
+    steps:
+      - checkout
+      - run:
+          name: Install Dependencies
+          command: |
+            apt-get update -qq -y
+            apt-get install -qq -y
+            apt-get -y install sudo
+            apt-get update && DEBIAN_FRONTEND="noninteractive" TZ="America/New_York" apt-get install -y tzdata
+            sudo apt-get install apt-transport-https ca-certificates curl gnupg -y
+            sudo apt-get install awscli -y
+            sudo apt-get update
+            curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+            sudo mv /tmp/eksctl /usr/local/bin
+
+      - run:
+                name: install eksctl
+                command: |
+                  curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+                  sudo mv /tmp/eksctl /usr/local/bin
+
+      - run:
+                name: verify eks install
+                command: |
+                        eksctl version
+
+      - run:
+                name: install kubectl
+                command: |
+                  curl -o kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.19.6/2021-01-05/bin/linux/amd64/kubectl
+                  chmod +x ./kubectl
+                  mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$PATH:$HOME/bin
+                  echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc
+
+      - run:
+                name: verify kubectl install
+                command: |
+                        kubectl version --short --client
+
+
 
 
 
@@ -75,12 +118,14 @@ workflows:
           requires: [build-app]
       - scan-app:
           requires: [lint-app]
+      - kubefun:
+          requires: [aws-ecr/build-and-push-image]
       # - ecr-upload:
       #     requires: [scan-app]
       - aws-ecr/build-and-push-image:
           setup-remote-docker: false
           repo: number5
-          tag: "latest,v0.1.${CIRCLE_BUILD_NUM}"
+          tag: "${CIRCLE_BUILD_NUM}"
           dockerfile: Dockerfile
           path: .
           requires: [scan-app]

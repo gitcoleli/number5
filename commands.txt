@@ -1,0 +1,5 @@
+eksctl create cluster --name udc-k8s --region=us-west-2 --ssh-public-key=udacity --nodes=4 --node-type=m5.large
+aws cloudformation describe-stack-resources --stack-name eksctl-udc-k8s-cluster --region us-west-2 ||jq
+
+kubectl apply -f deployment.yml
+kubectl apply -f service.yml
