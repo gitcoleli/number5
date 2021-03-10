@@ -104,7 +104,9 @@ jobs:
       - run:
                 name: verify kubectl install
                 command: |
-                        kubectl version --short --client
+                        pwd
+                        ls
+                        
 
 
 
