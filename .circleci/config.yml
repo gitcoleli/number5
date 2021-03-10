@@ -102,11 +102,16 @@ jobs:
 
 
       - run:
-                name: verify kubectl install
+                name: verify existing cluster
                 command: |
-                        pwd
-                        ls
-                        kubectl version 
+                  cluster=$(eksctl get cluster)
+                  if [[ $cluster -gt 0 ]]
+                      then 
+                      echo "cluster exists"
+                      else
+                      echo "building cluster"
+                      eksctl create cluster --name udc-k8s --region=us-west-2 --ssh-public-key=udacity --nodes=4 --node-type=t2.micro
+                  fi
 
 
 
