@@ -109,8 +109,40 @@ jobs:
                       echo "cluster exists"
                       else
                       echo "Cant find kube cluster, creating..."
+                      eksctl create cluster --name udc-k8s --region=us-west-2 --ssh-public-key=udacity --nodes=4 --node-type=t2.micro
                   fi
 
+  deployfun:
+    docker:
+      - image: ubuntu:20.04
+    steps:
+      - checkout
+      - run:
+          name: Install Dependencies
+          command: |
+            apt-get update -qq -y
+            apt-get install -qq -y
+            apt-get -y install sudo
+            apt-get update && DEBIAN_FRONTEND="noninteractive" TZ="America/New_York" apt-get install -y tzdata
+            sudo apt-get install apt-transport-https ca-certificates curl gnupg -y
+            sudo apt-get install awscli -y
+            sudo apt-get update
+            pwd
+
+
+      - run:
+                name: install kubectl
+                command: |
+                  curl -o kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.19.6/2021-01-05/bin/linux/amd64/kubectl
+                  chmod +x ./kubectl
+                  mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$PATH:$HOME/bin
+
+
+      - run:
+                name: deploy app
+                command: |
+                  kubectl apply -f k8s/deployment.yml
+                  kubectl apply -f k8s/service.yml
 
 
 
@@ -118,19 +150,20 @@ jobs:
 workflows:
   default:
     jobs:
-      - build-app
-      - lint-app:
-          requires: [build-app]
-      - scan-app:
-          requires: [lint-app]
-      - kubefun:
-          requires: [aws-ecr/build-and-push-image]
-      - aws-ecr/build-and-push-image:
-          setup-remote-docker: false
-          repo: number5
-          tag: "${CIRCLE_BUILD_NUM}"
-          dockerfile: Dockerfile
-          path: .
-          requires: [scan-app]
+      # - build-app
+      # - lint-app:
+      #     requires: [build-app]
+      # - scan-app:
+      #     requires: [lint-app]
+      # - kubefun:
+      #     requires: [aws-ecr/build-and-push-image]
+      - deployfun
+      # - aws-ecr/build-and-push-image:
+      #     setup-remote-docker: false
+      #     repo: number5
+      #     tag: "${CIRCLE_BUILD_NUM}"
+      #     dockerfile: Dockerfile
+      #     path: .
+      #     requires: [scan-app]
 
 ################################
