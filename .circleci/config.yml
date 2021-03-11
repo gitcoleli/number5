@@ -114,19 +114,26 @@ jobs:
                   fi
 
 
-create-update:
+# create-update:
+#     docker:
+#       - image: 'cimg/base:stable'
+#     steps:
+#       - checkout
+#       - kubernetes/install-kubectl
+#       - kubernetes/create-or-update-resource:
+#           get-rollout-status: true
+#           resource-file-path: k8s/deployment.yaml
+#           resource-name: deployment
+#           show-kubectl-command: true
+
+  deploy-image:
     docker:
       - image: 'cimg/base:stable'
     steps:
       - checkout
-      - kubernetes/install-kubectl
-      - kubernetes/create-or-update-resource:
-          get-rollout-status: true
-          resource-file-path: k8s/deployment.yaml
-          resource-name: deployment
-          show-kubectl-command: true
-
-
+      - kubernetes/install-kubectl:
+          kubectl-version: v1.20.4
+      - run: kubectl version
 
 
 
@@ -178,7 +185,7 @@ workflows:
       #     requires: [lint-app]
       # - eksfun:
       #     requires: [aws-ecr/build-and-push-image]
-      - create-update
+        - deploy-image
       # - aws-ecr/build-and-push-image:
       #     setup-remote-docker: false
       #     repo: number5
