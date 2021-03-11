@@ -67,7 +67,48 @@ jobs:
                         safety check
 
 ################################################ EKS ########################################################
+  eksbuild:
+    docker:
+      - image: ubuntu:18.04
+    steps:
+      - checkout
+      - run:
+          name: Install updates
+          command: |
+            apt-get -y -qq update
+            apt-get -y install sudo
 
+      - run:
+          name: Install sudo
+          command: |
+            apt-get -y -qq update
+            apt-get -y install sudo
+
+      - run:
+          name: Install apps needed for build
+          command: |
+            sudo apt-get -y install curl gnupg2 software-properties-common unzip less git dos2unix
+
+      - run:
+          name: Install eks
+          command: |
+            curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+            sudo mv /tmp/eksctl /usr/local/bin
+            eksctl version
+
+      - run:
+          name: build and verify eks cluster
+          command: |
+            touch clustername.txt
+            eksctl get cluster -o yaml  >> clustername.txt
+            cluster=$(grep -i udc-k8s clustername.txt | wc -l)
+            if [[ $cluster -gt 0 ]]
+                then 
+                echo "cluster exists"
+                else
+                echo "Cant find kube cluster, creating..."
+                eksctl create cluster --name udc-k8s --region=us-west-2 --ssh-public-key=udacity --nodes=4 --node-type=m5.large
+            fi
 
   eksfun:
     docker:
@@ -91,8 +132,6 @@ jobs:
           command: |
             sudo apt-get -y install curl gnupg2 software-properties-common unzip less git dos2unix
 
-
-
       - run:
           name: Install awscli
           command: |
@@ -107,17 +146,8 @@ jobs:
             curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
             sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
 
-
-
       - run:
-          name: Install eks
-          command: |
-            curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
-            sudo mv /tmp/eksctl /usr/local/bin
-            eksctl version
-
-      - run:
-          name: connect to eks
+          name: connect to EKS
           command: |
             aws eks --region us-west-2 update-kubeconfig --name udc-k8s
 
@@ -130,9 +160,6 @@ jobs:
             kubectl apply -f k8s/service.yml
 
 
-
-
-
 workflows:
   default:
     jobs:
@@ -141,12 +168,14 @@ workflows:
           requires: [build-app]
       - scan-app:
           requires: [lint-app]
-      - eksfun:
+      - eksbuild:
           requires: [aws-ecr/build-and-push-image]
+      - eksfun:
+          requires: [eksbuild]
       - aws-ecr/build-and-push-image:
           setup-remote-docker: false
           repo: number5
-          tag: "${CIRCLE_BUILD_NUM}"
+          tag: "latest"
           dockerfile: Dockerfile
           path: .
           requires: [scan-app]
