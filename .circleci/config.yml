@@ -3,6 +3,9 @@ version: 2.1
 orbs:
   aws-ecr: circleci/aws-ecr@6.15.3
   kubernetes: circleci/kubernetes@0.11.2
+  k8s: dialogue/k8s@4.3.1
+  aws-eks: circleci/aws-eks@0.2.3
+
 
     
 jobs:
@@ -65,6 +68,54 @@ jobs:
                         safety check
 
 ################################################ EKS ########################################################
+
+
+create-deployment:
+    executor: aws-eks/python3
+    parameters:
+      cluster-name:
+        description: |
+          Name of the EKS cluster
+        type: udc-k8s
+    steps:
+      - checkout
+      - aws-eks/update-kubeconfig-with-authenticator:
+          cluster-name: udc-k8s
+          install-kubectl: true
+      - kubernetes/create-or-update-resource:
+          get-rollout-status: true
+          resource-file-path: k8s/deployment.yaml
+          resource-name: deployment
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   eksfun:
     docker:
@@ -198,7 +249,7 @@ workflows:
       #     requires: [lint-app]
       # - eksfun:
       #     requires: [aws-ecr/build-and-push-image]
-        - deploy-image
+        - create-deployment
       # - aws-ecr/build-and-push-image:
       #     setup-remote-docker: false
       #     repo: number5
