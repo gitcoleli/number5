@@ -121,6 +121,11 @@ jobs:
           command: |
             aws eks --region us-west-2 update-kubeconfig --name udc-k8s
 
+      - run:
+          name: test kube commands
+          command: |
+            kubectl version
+
 
 
 
