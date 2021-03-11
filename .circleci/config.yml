@@ -70,21 +70,33 @@ jobs:
 
 
   mark:
-    executor: aws-eks/python3
-    parameters:
-      cluster-name:
-        description: |
-          Name of the EKS cluster
-        type: "udc-k8s"
+    docker:
+      - image: ubuntu:18.04
     steps:
       - checkout
-      - aws-eks/update-kubeconfig-with-authenticator:
-          cluster-name: udc-k8s
-          install-kubectl: true
-      - kubernetes/create-or-update-resource:
-          get-rollout-status: true
-          resource-file-path: k8s/deployment.yaml
-          resource-name: deployment
+      - run:
+          name: Install Dependencies
+          command: |
+            # install sudo package 
+            apt-get -y -qq update
+            apt-get -y install sudo
+            # extras for below installs
+            sudo apt-get -y install curl gnupg2 software-properties-common unzip less git dos2unix
+            # install AWS CLI at latest version
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip awscliv2.zip
+            sudo ./aws/install
+            aws version
+            
+            # Install kubectl
+            curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+            sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+            kubectl version
+            
+            # Install eksctl
+            curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+            sudo mv /tmp/eksctl /usr/local/bin
+            eksctl version
 
 
 
