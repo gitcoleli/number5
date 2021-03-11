@@ -137,6 +137,7 @@ jobs:
       - run:
           name: oh lets see
           command: |
+            sudo apt-get install awscli -y
             aws eks --region us-west-2 update-kubeconfig --name udc-k8s
             kubectl version
 
