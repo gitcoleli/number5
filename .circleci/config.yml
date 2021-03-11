@@ -68,7 +68,7 @@ jobs:
 ################################################ EKS BUILD ########################################################
   eksbuild:
     docker:
-      - image: ubuntu:20.04
+      - image: ubuntu:18.04
     steps:
       - checkout
       - run:
@@ -112,7 +112,7 @@ jobs:
 
   eksfun:
     docker:
-      - image: ubuntu:20.04
+      - image: ubuntu:18.04
     steps:
       - checkout
       - run:
