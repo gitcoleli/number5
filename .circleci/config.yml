@@ -104,13 +104,16 @@ jobs:
       - run:
                 name: verify existing cluster
                 command: |
-                  cluster=$(eksctl get cluster)
+                  touch clustername.txt
+                  cluster=$(eksctl get cluster -o yaml ) >> clustername.txt
                   if [[ $cluster == "udc-k8s" ]]
                       then 
                       echo "cluster exists"
                       else
                       echo "building cluster"
                   fi
+                  ls
+                  cat clustername.txt
 
 
 
