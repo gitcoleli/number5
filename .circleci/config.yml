@@ -134,7 +134,11 @@ jobs:
       - checkout
       - kubernetes/install-kubectl:
           kubectl-version: v1.20.4
-      - run: kubectl version
+      - run:
+          name: oh lets see
+          command: |
+            aws eks --region us-west-2 update-kubeconfig --name udc-k8s
+            kubectl version
 
 
 
@@ -187,7 +191,7 @@ workflows:
       #     requires: [lint-app]
       # - eksfun:
       #     requires: [aws-ecr/build-and-push-image]
-        - deployfun
+        - deploy-image
       # - aws-ecr/build-and-push-image:
       #     setup-remote-docker: false
       #     repo: number5
