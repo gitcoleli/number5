@@ -3,3 +3,18 @@ aws cloudformation describe-stack-resources --stack-name eksctl-udc-k8s-cluster 
 
 kubectl apply -f k8s/deployment.yml
 kubectl apply -f k8s/service.yml
+
+
+kubectl get deployments
+kubectl get pods
+
+kubectl delete deployments --all
+
+kubectl delete services --all
+
+
+
+eksctl get cluster
+kubectl get services
+
+eksctl delete cluster udc-k8s
