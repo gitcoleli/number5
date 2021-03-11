@@ -69,7 +69,7 @@ jobs:
 ################################################ EKS ########################################################
 
 
-create-deployment:
+mark:
     executor: aws-eks/python3
     parameters:
       cluster-name:
@@ -88,40 +88,17 @@ create-deployment:
 
 
 
-
 workflows:
-  deployment:
+  default:
     jobs:
-      - aws-eks/create-cluster:
-          cluster-name: eks-demo-deployment
-      - create-deployment:
-          cluster-name: eks-demo-deployment
-          requires:
-            - aws-eks/create-cluster
-      - aws-eks/update-container-image:
-          cluster-name: eks-demo-deployment
-          container-image-updates: 'nginx=nginx:1.9.1'
-          post-steps:
-            - kubernetes/delete-resource:
-                resource-names: nginx-deployment
-                resource-types: deployment
-                wait: true
-          record: true
-          requires:
-            - create-deployment
-          resource-name: deployment/nginx-deployment
-      - aws-eks/delete-cluster:
-          cluster-name: eks-demo-deployment
-          requires:
-            - aws-eks/update-container-image
-                  # - build-app
+      # - build-app
       # - lint-app:
       #     requires: [build-app]
       # - scan-app:
       #     requires: [lint-app]
       # - eksfun:
       #     requires: [aws-ecr/build-and-push-image]
-      # - create-deployment
+        - mark
       # - aws-ecr/build-and-push-image:
       #     setup-remote-docker: false
       #     repo: number5
@@ -129,4 +106,6 @@ workflows:
       #     dockerfile: Dockerfile
       #     path: .
       #     requires: [scan-app]
+      
+
 ################################
