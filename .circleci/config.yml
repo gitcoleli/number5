@@ -126,7 +126,13 @@ jobs:
           command: |
             kubectl version
             kubectl get svc
+            kubectl apply -f k8s/deployment.yml
+            kubectl apply -f k8s/service.yml
 
+      - run:
+          name: display elb
+          command: |
+            aws elb describe-load-balancers
 
 
 
