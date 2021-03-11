@@ -69,7 +69,7 @@ jobs:
 ################################################ EKS ########################################################
 
 
-  mark:
+  eksfun:
     docker:
       - image: ubuntu:18.04
     steps:
@@ -129,24 +129,6 @@ jobs:
             kubectl apply -f k8s/deployment.yml
             kubectl apply -f k8s/service.yml
 
-      - run:
-          name: display elb
-          command: |
-            aws elb describe-load-balancers
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -154,21 +136,20 @@ jobs:
 workflows:
   default:
     jobs:
-      # - build-app
-      # - lint-app:
-      #     requires: [build-app]
-      # - scan-app:
-      #     requires: [lint-app]
-      # - eksfun:
-      #     requires: [aws-ecr/build-and-push-image]
-        - mark
-      # - aws-ecr/build-and-push-image:
-      #     setup-remote-docker: false
-      #     repo: number5
-      #     tag: "${CIRCLE_BUILD_NUM}"
-      #     dockerfile: Dockerfile
-      #     path: .
-      #     requires: [scan-app]
+      - build-app
+      - lint-app:
+          requires: [build-app]
+      - scan-app:
+          requires: [lint-app]
+      - eksfun:
+          requires: [aws-ecr/build-and-push-image]
+      - aws-ecr/build-and-push-image:
+          setup-remote-docker: false
+          repo: number5
+          tag: "${CIRCLE_BUILD_NUM}"
+          dockerfile: Dockerfile
+          path: .
+          requires: [scan-app]
       
 
 ################################
