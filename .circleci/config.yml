@@ -11,7 +11,7 @@ jobs:
 
 # ##########################Building Section #################################################################################################
 
-  build-app:
+  check-requirements:
     build:
     docker:
       - image: python:3.9-alpine
@@ -21,11 +21,11 @@ jobs:
       - attach_workspace:
                     at: ~/
       - run:
-                name: Install dependencies
+                name: confirming requirements 
                 command: |
                         pip install -r requirements.txt
                         pip list
-                        ls
+
 
 #######################################linting the Application##################################################################################
 
@@ -42,9 +42,8 @@ jobs:
                 name: Install dependencies
                 command: |
                         pip install -r requirements.txt
-                        pip list
       - run:
-                name: lint app
+                name: pylint application 
                 command: |
                         pylint --disable=R,C,W1203 app.py                                                
 
@@ -60,7 +59,7 @@ jobs:
       - attach_workspace:
                     at: ~/
       - run:
-                name: Install dependencies
+                name: Scanning Application & Dependencies
                 command: |
                         pip install --upgrade pip
                         pip install -r requirements.txt
@@ -69,19 +68,18 @@ jobs:
 ################################################ EKS BUILD ########################################################
   eksbuild:
     docker:
-      - image: ubuntu:18.04
+      - image: ubuntu:20.04
     steps:
       - checkout
       - run:
-          name: Install updates
+          name: Install update
           command: |
             apt-get -y -qq update
-            apt-get -y install sudo
+
 
       - run:
           name: Install sudo
           command: |
-            apt-get -y -qq update
             apt-get -y install sudo
 
       - run:
@@ -97,40 +95,31 @@ jobs:
             eksctl version
 
       - run:
-          name: build and verify eks cluster
+          name: verify eks cluster
           command: |
             touch clustername.txt
             eksctl get cluster -o yaml  >> clustername.txt
             cluster=$(grep -i udc-k8s clustername.txt | wc -l)
             if [[ $cluster -gt 0 ]]
                 then 
-                echo "cluster exists"
+                echo "cluster udc-k8s exists"
                 else
-                echo "Cant find kube cluster, creating..."
+                echo "Cant find udc-k8s cluster, creating..."
+                eksctl create cluster --name udc-k8s --region=us-west-2 --ssh-public-key=udacity --nodes=4 --node-type=m5.large
             fi
 
 ################################################ EKS DEPLOY ########################################################
 
   eksfun:
     docker:
-      - image: ubuntu:18.04
+      - image: ubuntu:20.04
     steps:
       - checkout
       - run:
-          name: Install updates
+          name: update and install dependencies
           command: |
             apt-get -y -qq update
             apt-get -y install sudo
-
-      - run:
-          name: Install sudo
-          command: |
-            apt-get -y -qq update
-            apt-get -y install sudo
-
-      - run:
-          name: Install apps needed for build
-          command: |
             sudo apt-get -y install curl gnupg2 software-properties-common unzip less git dos2unix
 
       - run:
@@ -148,15 +137,13 @@ jobs:
             sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
 
       - run:
-          name: connect to EKS
+          name: connect image to EKS
           command: |
             aws eks --region us-west-2 update-kubeconfig --name udc-k8s
 
       - run:
-          name: test kube commands
+          name: Deploy MicroService Python Flask Application
           command: |
-            kubectl version
-            kubectl get svc
             kubectl apply -f k8s/deployment.yml
             kubectl apply -f k8s/service.yml
 
@@ -164,7 +151,7 @@ jobs:
 workflows:
   default:
     jobs:
-      - build-app
+      - check-requirements
       - lint-app:
           requires: [build-app]
       - scan-app:
