@@ -137,9 +137,15 @@ jobs:
       - run:
           name: oh lets see
           command: |
+            apt-get update -qq -y
+            apt-get install -qq -y
+            apt-get -y install sudo
+            apt-get update && DEBIAN_FRONTEND="noninteractive" TZ="America/New_York" apt-get install -y tzdata
+            sudo apt-get install apt-transport-https ca-certificates curl gnupg -y
             sudo apt-get install awscli -y
             aws eks --region us-west-2 update-kubeconfig --name udc-k8s
             kubectl version
+            kubectl get svc
 
 
 
