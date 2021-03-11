@@ -164,21 +164,21 @@ jobs:
 workflows:
   default:
     jobs:
-      # - build-app
-      # - lint-app:
-      #     requires: [build-app]
-      # - scan-app:
-      #     requires: [lint-app]
-      - eksbuild
-      #     requires: [aws-ecr/build-and-push-image]
-      # - eksfun:
-      #     requires: [eksbuild]
-      # - aws-ecr/build-and-push-image:
-      #     setup-remote-docker: false
-      #     repo: number5
-      #     tag: "latest"
-      #     dockerfile: Dockerfile
-      #     path: .
-      #     requires: [scan-app]
+      - build-app
+      - lint-app:
+          requires: [build-app]
+      - scan-app:
+          requires: [lint-app]
+      - eksbuild:
+          requires: [aws-ecr/build-and-push-image]
+      - eksfun:
+          requires: [eksbuild]
+      - aws-ecr/build-and-push-image:
+          setup-remote-docker: false
+          repo: number5
+          tag: "latest"
+          dockerfile: Dockerfile
+          path: .
+          requires: [scan-app]
 
 ################################
