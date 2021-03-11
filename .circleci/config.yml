@@ -63,6 +63,7 @@ jobs:
                         pip install -r requirements.txt
                         safety check
 
+################################################ EKS ########################################################
 
   kubefun:
     docker:
@@ -88,10 +89,6 @@ jobs:
                   curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
                   sudo mv /tmp/eksctl /usr/local/bin
 
-      - run:
-                name: verify eks install
-                command: |
-                        eksctl version
 
       - run:
                 name: install kubectl
@@ -102,7 +99,7 @@ jobs:
 
 
       - run:
-                name: verify existing cluster
+                name: verify existing eks cluster
                 command: |
                   touch clustername.txt
                   eksctl get cluster -o yaml  >> clustername.txt
@@ -121,19 +118,19 @@ jobs:
 workflows:
   default:
     jobs:
-      # - build-app
-      # - lint-app:
-      #     requires: [build-app]
-      # - scan-app:
-      #     requires: [lint-app]
-      - kubefun
-          # requires: [aws-ecr/build-and-push-image]
-      # - aws-ecr/build-and-push-image:
-      #     setup-remote-docker: false
-      #     repo: number5
-      #     tag: "${CIRCLE_BUILD_NUM}"
-      #     dockerfile: Dockerfile
-      #     path: .
-      #     requires: [scan-app]
+      - build-app
+      - lint-app:
+          requires: [build-app]
+      - scan-app:
+          requires: [lint-app]
+      - kubefun:
+          requires: [aws-ecr/build-and-push-image]
+      - aws-ecr/build-and-push-image:
+          setup-remote-docker: false
+          repo: number5
+          tag: "${CIRCLE_BUILD_NUM}"
+          dockerfile: Dockerfile
+          path: .
+          requires: [scan-app]
 
 ################################
