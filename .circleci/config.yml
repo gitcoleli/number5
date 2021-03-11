@@ -105,7 +105,7 @@ jobs:
                 name: verify existing cluster
                 command: |
                   cluster=$(eksctl get cluster)
-                  if [[ $cluster = "udc-k8s" ]]
+                  if [[ $cluster == "udc-k8s" ]]
                       then 
                       echo "cluster exists"
                       else
