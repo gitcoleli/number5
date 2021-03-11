@@ -125,6 +125,7 @@ jobs:
           name: test kube commands
           command: |
             kubectl version
+            kubectl get svc
 
 
 
