@@ -104,6 +104,8 @@ jobs:
       - run:
                 name: verify existing cluster
                 command: |
+                  touch clustername.txt
+                  eksctl get cluster -o yaml  >> clustername.txt
                   cluster=$(grep -i udc-k8s clustername.txt | wc -l)
                   if [[ $cluster -gt 0 ]]
                       then 
