@@ -3,7 +3,6 @@ version: 2.1
 orbs:
   aws-ecr: circleci/aws-ecr@6.15.3
   kubernetes: circleci/kubernetes@0.11.2
-  k8s: dialogue/k8s@4.3.1
   aws-eks: circleci/aws-eks@0.2.3
 
 
