@@ -152,11 +152,11 @@ jobs:
 workflows:
   default:
     jobs:
-      - check-requirements
-      - lint-app:
-          requires: [check-requirements]
-      - scan-app:
-          requires: [lint-app]
+      # - check-requirements
+      # - lint-app:
+      #     requires: [check-requirements]
+      # - scan-app:
+      #     requires: [lint-app]
       - eksbuild:
           requires: [aws-ecr/build-and-push-image]
       - eksfun:
@@ -167,6 +167,6 @@ workflows:
           tag: "v0.1.${CIRCLE_BUILD_NUM}"
           dockerfile: Dockerfile
           path: .
-          requires: [scan-app]
+          # requires: [scan-app]
 
 ################################
