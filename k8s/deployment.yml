@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: py-app
-        image: 962906402563.dkr.ecr.us-west-2.amazonaws.com/number5:"v0.1.${CIRCLE_BUILD_NUM}"
+        image: "962906402563.dkr.ecr.us-west-2.amazonaws.com/number5:v0.1.${CIRCLE_BUILD_NUM}"
         resources:
           limits:
             memory: 512Mi
