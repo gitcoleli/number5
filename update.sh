@@ -2,4 +2,4 @@ SEARCH="xxx"
 
 REPLACE="${CIRCLE_BUILD_NUM}"
 
-cat deployment.yml | sed -e "s/$SEARCH/$REPLACE/" >> deployment2.yml
+cat k8s/deployment.yml | sed -e "s/$SEARCH/$REPLACE/" >> deployment2.yml
