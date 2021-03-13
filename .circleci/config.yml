@@ -87,6 +87,9 @@ jobs:
           command: |
             sudo apt-get -y install curl gnupg2 software-properties-common unzip less git dos2unix
 
+
+
+
       - run:
           name: Install eks
           command: |
@@ -137,6 +140,13 @@ jobs:
             sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
 
       - run:
+          name: update deployment file with tag
+          command: |
+            chmod 755 update.sh
+            ./update.sh
+            cat k8s/deployment.yml
+
+      - run:
           name: connect image to EKS
           command: |
             aws eks --region us-west-2 update-kubeconfig --name udc-k8s
@@ -164,7 +174,7 @@ workflows:
       - aws-ecr/build-and-push-image:
           setup-remote-docker: false
           repo: number5
-          tag: "v0.1.${CIRCLE_BUILD_NUM}"
+          tag: "v0.1.${CIRCLE_WORKFLOW_ID:0:8}"
           dockerfile: Dockerfile
           path: .
           # requires: [scan-app]
