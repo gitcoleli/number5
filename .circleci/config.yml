@@ -159,8 +159,10 @@ jobs:
       - run:
           name: test site
           command: |
-            chmod 755 update.sh
-            ./sitetest.sh
+            chmod 755 bluetest.sh
+            ./bluetest.sh
+            chmod 755 greentest.sh
+            ./greentest.sh
 
 
 workflows:
