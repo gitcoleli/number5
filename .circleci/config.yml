@@ -46,7 +46,7 @@ jobs:
 
 ###############################################vulnerability Scanning the alplication ###############################################################
 
-  vulnerability-scan-app:
+  safety-scan:
     build:
     docker:
       - image: python:3.9-alpine
@@ -165,22 +165,62 @@ jobs:
             ./greentest.sh
 
 
+  testing-site:
+    docker:
+      - image: ubuntu:18.04
+    steps:
+      - checkout
+      - run:
+          name: update and install dependencies
+          command: |
+            apt-get -y -qq update
+            apt-get -y install sudo
+            sudo apt-get -y install curl unzip
+
+      - run:
+          name: Install kubectl
+          command: |
+            curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"        #https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/
+            sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+
+      - run:
+          name: connect to EKS
+          command: |
+            aws eks --region us-west-2 update-kubeconfig --name udc-k8s
+
+      - run:
+          name: get pod and lb name
+          command: |
+            kubectl get pods
+            kubectl get svc | grep -i loadbalancer | awk  '{ print $4 }'
+
+      - run:
+          name: test site blue or green
+          command: |
+            chmod 755 bluetest.sh
+            ./bluetest.sh
+            chmod 755 greentest.sh
+            ./greentest.sh
+
+
 workflows:
   default:
     jobs:
       - linting
-      - vulnerability-scan-app:
+      - safety-scan:
           requires: [linting]
       - cluster-verification:
           requires: [aws-ecr/build-and-push-image]
       - image-deploy:
           requires: [cluster-verification]
+      - testing-site:
+          requires: [image-deploy]
       - aws-ecr/build-and-push-image:
           setup-remote-docker: false
           repo: number5
           tag: "v0.1.${CIRCLE_WORKFLOW_ID:0:8}"
           dockerfile: Dockerfile
           path: .
-          requires: [vulnerability-scan-app]
+          requires: [safety-scan]
 
 ################################
