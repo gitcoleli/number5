@@ -191,6 +191,13 @@ jobs:
             eksctl version
 
       - run:
+          name: Install awscli
+          command: |
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip awscliv2.zip
+            sudo ./aws/install
+            
+      - run:
           name: connect to EKS
           command: |
             aws eks --region us-west-2 update-kubeconfig --name udc-k8s
