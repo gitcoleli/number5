@@ -63,7 +63,7 @@ jobs:
                         safety check
 
 ################################################ EKS BUILD ########################################################
-  eksbuild:
+  cluster-verification:
     docker:
       - image: ubuntu:18.04
     steps:
@@ -110,7 +110,7 @@ jobs:
 
 ################################################ EKS DEPLOY ########################################################
 
-  eksfun:
+  image-deploy:
     docker:
       - image: ubuntu:18.04
     steps:
@@ -156,6 +156,11 @@ jobs:
             kubectl get pods
             kubectl get svc | grep -i loadbalancer | awk  '{ print $4 }'
 
+      - run:
+          name: test site
+          command: |
+            chmod 755 update.sh
+            ./sitetest.sh
 
 
 workflows:
@@ -164,10 +169,10 @@ workflows:
       - linting
       - vulnerability-scan-app:
           requires: [linting]
-      - eksbuild:
+      - cluster-verification:
           requires: [aws-ecr/build-and-push-image]
-      - eksfun:
-          requires: [eksbuild]
+      - image-deploy:
+          requires: [cluster-verification]
       - aws-ecr/build-and-push-image:
           setup-remote-docker: false
           repo: number5
