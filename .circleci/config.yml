@@ -14,7 +14,7 @@ jobs:
   check-requirements:
     docker:
       # Use the same Docker base as the project
-      - image: python:3.7.3-stretch
+      - image: python:3.9-alpine
 
     working_directory: ~/repo
 
@@ -50,55 +50,6 @@ jobs:
             make lint
             pylint --disable=R,C,W1203 app.py 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    # build:
-    # docker:
-    #   - image: python:3.9-alpine
-    # working_directory: ~/repo
-    # steps:
-    #   - checkout
-    #   - attach_workspace:
-    #                 at: ~/
-    #   - run:
-    #             name: confirming requirements 
-    #             command: |
-    #                     pip install -r requirements.txt
-    #                     pip list
-
-
-#######################################linting the Application##################################################################################
-
-  lint-app:
-    build:
-    docker:
-      - image: python:3.9-alpine
-    working_directory: ~/repo
-    steps:
-      - checkout
-      - attach_workspace:
-                    at: ~/
-      - run:
-                name: Install dependencies
-                command: |
-                        pip install -r requirements.txt
-      - run:
-                name: pylint application 
-                command: |
-                        pylint --disable=R,C,W1203 app.py                                                
 
 ###############################################vulnerability Scanning the alplication ###############################################################
 
@@ -189,7 +140,7 @@ jobs:
       - run:
           name: Install kubectl
           command: |
-            curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+            curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"        #https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/
             sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
 
       - run:
