@@ -1,3 +1,5 @@
+Scratchpad for testing 
+
 eksctl create cluster --name udc-k8s --region=us-west-2 --ssh-public-key=udacity --nodes=4 --node-type=t2.micro
 aws cloudformation describe-stack-resources --stack-name eksctl-udc-k8s-cluster --region us-west-2 ||jq
 
@@ -13,15 +15,11 @@ kubectl delete deployments --all
 kubectl delete services --all
 
 
-
 eksctl get cluster
-
 
 kubectl get services
 kubectl get deployments
 kubectl get pods
-
-
 
 
 
@@ -31,7 +29,6 @@ eksctl delete cluster udc-k8s
 curl http://
 
 aws ecr list-images --repository-name number5
-
 
 
 kubectl describe pod py-app-7d797bdb56-qm2g9

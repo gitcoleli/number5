@@ -4,7 +4,7 @@ app = Flask(__name__)
 
 
 @app.route('/')
-def hello_blue():
+def udcity():
     return render_template('index.html')
 
 
