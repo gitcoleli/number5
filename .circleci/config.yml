@@ -11,7 +11,7 @@ jobs:
 
 # ##########################Building Section #################################################################################################
 
-  check-requirements:
+  linting:
     docker:
       - image: python:3.7.3-stretch
     working_directory: ~/repo
@@ -46,7 +46,7 @@ jobs:
 
 ###############################################vulnerability Scanning the alplication ###############################################################
 
-  scan-app:
+  vulnerability-scan-app:
     build:
     docker:
       - image: python:3.9-alpine
@@ -161,21 +161,19 @@ jobs:
 workflows:
   default:
     jobs:
-      - check-requirements
-      # - lint-app:
-      #     requires: [check-requirements]
-      # - scan-app:
-      #     requires: [lint-app]
-      # - eksbuild:
-      #     requires: [aws-ecr/build-and-push-image]
-      # - eksfun:
-      #     requires: [eksbuild]
-      # - aws-ecr/build-and-push-image:
-      #     setup-remote-docker: false
-      #     repo: number5
-      #     tag: "v0.1.${CIRCLE_WORKFLOW_ID:0:8}"
-      #     dockerfile: Dockerfile
-      #     path: .
-          # requires: [scan-app]
+      - linting
+      - vulnerability-scan-app:
+          requires: [linting]
+      - eksbuild:
+          requires: [aws-ecr/build-and-push-image]
+      - eksfun:
+          requires: [eksbuild]
+      - aws-ecr/build-and-push-image:
+          setup-remote-docker: false
+          repo: number5
+          tag: "v0.1.${CIRCLE_WORKFLOW_ID:0:8}"
+          dockerfile: Dockerfile
+          path: .
+          requires: [vulnerability-scan-app]
 
 ################################
