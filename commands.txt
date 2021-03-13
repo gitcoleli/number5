@@ -31,3 +31,7 @@ eksctl delete cluster udc-k8s
 curl http://
 
 aws ecr list-images --repository-name number5
+
+
+
+kubectl describe pod py-app-7d797bdb56-qm2g9
