@@ -151,7 +151,7 @@ jobs:
       - run:
           name: deploy microservice
           command: |
-            kubectl apply -f deployment2.yaml
+            kubectl apply -f deployment2.yml
             kubectl rollout restart deployment/app.py
             kubectl get svc | grep -i loadbalancer | awk  '{ print $4 }'
 
