@@ -149,21 +149,13 @@ jobs:
             aws eks --region us-west-2 update-kubeconfig --name udc-k8s
 
       - run:
-          name: Deploy MicroService Python Flask Application
+          name: deploy microservice
           command: |
-            kubectl apply -f deployment2.yml
-            kubectl apply -f k8s/service.yml
-            kubectl get pods
+            kubectl apply -f deployment2.yaml
+            kubectl rollout restart deployment/app.py
             kubectl get svc | grep -i loadbalancer | awk  '{ print $4 }'
 
-      - run:
-          name: test site
-          command: |
-            chmod 755 bluetest.sh
-            ./bluetest.sh
-            chmod 755 greentest.sh
-            ./greentest.sh
-
+################################# testing ###################################################
 
   testing-site:
     docker:
