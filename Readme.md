@@ -7,3 +7,8 @@ Capstone Project
 5. ECR image deployed to AWS EKS
 6. LB output for Curl Testing of Site
 
+
+
+
+http://afc2971c3751a4b7484596c55c29f1c4-1699411778.us-west-2.elb.amazonaws.com/
+
