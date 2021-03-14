@@ -36,4 +36,4 @@ kubectl describe pod py-app-7d797bdb56-qm2g9
 
 eksctl create cluster --name udc-k8s --region=us-west-2 --ssh-public-key=udacity --nodes=4 --node-type=t2.micro
 
-###################
+########################
